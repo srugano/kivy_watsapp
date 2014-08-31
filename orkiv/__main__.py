@@ -13,6 +13,10 @@ from kivy.uix.button import Button
 class Orkiv(App):
     icon = 'customicon.png'
 
+    def __init__(self):
+        super(Orkiv, self).__init__()
+        self.xmpp = None
+
     def connect_to_jabber(self, jabber_id, password):
         self.xmpp = ClientXMPP(jabber_id, password)
         self.xmpp.reconnect_max_attempts = 1
@@ -22,6 +26,14 @@ class Orkiv(App):
         self.xmpp.process()
         self.xmpp.send_presence()
         self.xmpp.get_roster()
+
+    def disconnect_xmpp(self):
+        if self.xmpp and self.xmpp.state.ensure("connected"):
+            self.xmpp.abort()
+        self.xmpp = None
+
+    def on_stop(self):
+        self.disconnect_xmpp()
 
 class AccountDetailsForm(AnchorLayout):
     server_box = ObjectProperty()
@@ -67,8 +79,6 @@ class ConnectionModal(ModalView):
             button.height = "40dp"
             button.bind(on_press=self.dismiss)
             self.add_widget(button)
-        finally:
-            if hasattr(app, "xmpp") and app.xmpp:
-                app.xmpp.disconnect()
+            app.disconnect_xmpp()
 
 Orkiv().run()
