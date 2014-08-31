@@ -7,6 +7,7 @@ from kivy.uix.modalview import ModalView
 from kivy.uix.label import Label
 from sleekxmpp.exceptions import XMPPError
 from sleekxmpp.jid import InvalidJID
+from kivy.uix.button import Button
 
 
 class Orkiv(App):
@@ -61,6 +62,11 @@ class ConnectionModal(ModalView):
             self.label.text = "\n".join(app.xmpp.client_roster.keys())
         except (XMPPError, InvalidJID):
             self.label.text = "Sorry, couldn't connect, check your credentials"
+            button = Button(text="Try Again")
+            button.size_hint = (1.0, None)
+            button.height = "40dp"
+            button.bind(on_press=self.dismiss)
+            self.add_widget(button)
         finally:
             if hasattr(app, "xmpp") and app.xmpp:
                 app.xmpp.disconnect()
