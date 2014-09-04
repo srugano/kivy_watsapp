@@ -92,6 +92,30 @@ class BuddyList(BoxLayout):
         self.app = Orkiv.get_running_app()
         self.list_view.adapter.data = sorted(self.app.xmpp.client_roster.keys())
 
+    def roster_converter(self, index, jabberid):
+        result = {
+            "jabberid": jabberid,
+            "full_name": self.app.xmpp.client_roster[jabberid]['name']
+        }
+
+        presence = sorted(
+            self.app.xmpp.client_roster.presence(jabberid).values(),
+            key=lambda p: p.get("priority", 100), reverse=True)
+
+        if presence:
+            result['status_message'] = presence[0].get('status', '')
+            show = presence[0].get('show')
+            result['online_status'] = show if show else "available"
+        else:
+            result['status_message'] = ""
+            result['online_status'] = "offline"
+
+        if index % 2:
+            result['background'] = (0, 0, 0, 1)
+        else:
+            result['background'] = (0.05, 0.05, 0.07, 1)
+        return result
+
 class OrkivRoot(BoxLayout):
     def show_buddy_list(self):
         self.clear_widgets()
@@ -99,7 +123,11 @@ class OrkivRoot(BoxLayout):
         self.add_widget(self.buddy_list)
 
 class BuddyListItem(BoxLayout):
-    text = StringProperty()
+    jabberid = StringProperty()
+    full_name = StringProperty()
+    status_message = StringProperty()
+    online_status = StringProperty()
+    background = ObjectProperty()
 
 
 Orkiv().run()

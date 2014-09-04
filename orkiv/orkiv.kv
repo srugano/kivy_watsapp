@@ -44,12 +44,37 @@ OrkivRoot:
             on_press: root.login()
 <BuddyListItem>:
     size_hint_y: None
-    height: "100dp"
+    height: "75dp"
+    canvas.before:
+        Color:
+            rgba: self.background
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        size_hint_x: 3
+        orientation: 'vertical'
+        Label:
+            text: root.jabberid
+            font_size: "25dp"
+            size_hint_y: 0.7
+        Label:
+            text: root.status_message
+            color: (0.5, 0.5, 0.5, 1.0)
+            font_size: "15dp"
+            size_hint_y: 0.3
     Label:
-        text: root.text
+        text: root.jabberid
+    Label:
+        text: root.full_name
+    Label:
+        text: root.status_message
+    Label:
+        text: root.online_status
 
 <BuddyList>:
     list_view: list_view
     ListView:
         id: list_view
-        adapter: la.ListAdapter(data=[], cls=ok.BuddyListItem)
+        adapter: la.ListAdapter(data=[], cls=ok.BuddyListItem, args_converter=root.roster_converter)
