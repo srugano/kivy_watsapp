@@ -9,6 +9,7 @@ from sleekxmpp.exceptions import XMPPError
 from sleekxmpp.jid import InvalidJID
 from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
+from kivy.properties import StringProperty
 
 
 class Orkiv(App):
@@ -96,6 +97,9 @@ class OrkivRoot(BoxLayout):
         self.clear_widgets()
         self.buddy_list = BuddyList()
         self.add_widget(self.buddy_list)
+
+class BuddyListItem(BoxLayout):
+    text = StringProperty()
 
 
 Orkiv().run()
