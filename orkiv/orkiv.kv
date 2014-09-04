@@ -45,12 +45,6 @@ OrkivRoot:
 <BuddyListItem>:
     size_hint_y: None
     height: "75dp"
-    canvas.before:
-        Color:
-            rgba: self.background
-        Rectangle:
-            pos: self.pos
-            size: self.size
 
     BoxLayout:
         size_hint_x: 3
@@ -68,10 +62,10 @@ OrkivRoot:
         text: root.jabberid
     Label:
         text: root.full_name
-    Label:
-        text: root.status_message
     Image:
         source: "orkiv/icons/" + root.online_status + ".png"
+    Label:
+        text: root.status_message
 
 <BuddyList>:
     list_view: list_view

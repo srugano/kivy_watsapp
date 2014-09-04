@@ -10,6 +10,7 @@ from sleekxmpp.jid import InvalidJID
 from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import StringProperty
+from kivy.uix.listview import ListItemButton
 
 
 class Orkiv(App):
@@ -111,9 +112,9 @@ class BuddyList(BoxLayout):
             result['online_status'] = "offline"
 
         if index % 2:
-            result['background'] = (0, 0, 0, 1)
+            result['background_color'] = (0, 0, 0, 1)
         else:
-            result['background'] = (0.05, 0.05, 0.07, 1)
+            result['background_color'] = (0.05, 0.05, 0.07, 1)
         return result
 
 class OrkivRoot(BoxLayout):
@@ -122,7 +123,7 @@ class OrkivRoot(BoxLayout):
         self.buddy_list = BuddyList()
         self.add_widget(self.buddy_list)
 
-class BuddyListItem(BoxLayout):
+class BuddyListItem(BoxLayout, ListItemButton):
     jabberid = StringProperty()
     full_name = StringProperty()
     status_message = StringProperty()
