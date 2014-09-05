@@ -118,10 +118,16 @@ class BuddyList(BoxLayout):
         return result
 
 class OrkivRoot(BoxLayout):
+
     def show_buddy_list(self):
         self.clear_widgets()
         self.buddy_list = BuddyList()
         self.add_widget(self.buddy_list)
+
+    def show_buddy_chat(self, jabber_id):
+        self.remove_widget(self.buddy_list)
+        chat_window = ChatWindow(jabber_id=jabber_id)
+        self.add_widget(chat_window)
 
 class BuddyListItem(BoxLayout, ListItemButton):
     jabberid = StringProperty()
@@ -130,5 +136,9 @@ class BuddyListItem(BoxLayout, ListItemButton):
     online_status = StringProperty()
     background = ObjectProperty()
 
+class ChatWindow(BoxLayout):
+    jabber_id = StringProperty()
+    chat_log_label = ObjectProperty()
+    send_chat_textinput = ObjectProperty()
 
 Orkiv().run()
