@@ -133,23 +133,22 @@ class OrkivRoot(BoxLayout):
             buddy_list_items.deselect()
         self.add_widget(self.buddy_list)
 
-    def show_buddy_chat(self, jabber_id):
-        self.remove_widget(self.buddy_list)
+    def get_chat_window(self, jabber_id):
         if jabber_id not in self.chat_windows:
             self.chat_windows[jabber_id] = ChatWindow(jabber_id=jabber_id)
-        self.add_widget(self.chat_windows[jabber_id])
+        return self.chat_windows[jabber_id]
+
+    def show_buddy_chat(self, jabber_id):
+        self.remove_widget(self.buddy_list)
+        self.add_widget(self.get_chat_window(jabber_id))
 
     def handle_xmpp_message(self, message):
         if message['type'] not in ['normal', 'chat']:
             return
         jabber_id = message['from'].bare
 
-        if jabber_id not in self.chat_windows:
-            self.chat_windows[jabber_id] = ChatWindow(jabber_id=jabber_id)
-        self.chat_windows[jabber_id].chat_log_label.text += "(%s) %s: %s\n" % (
-                datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
-                jabber_id,
-                message['body'])
+        chat_window = self.get_chat_window(jabber_id)
+        chat_window.append_chat_message(jabber_id, message['body'])
 
 class BuddyListItem(BoxLayout, ListItemButton):
     jabberid = StringProperty()
@@ -163,14 +162,18 @@ class ChatWindow(BoxLayout):
     chat_log_label = ObjectProperty()
     send_chat_textinput = ObjectProperty()
 
+    def append_chat_message(self, sender, message):
+        self.chat_log_label.text += "(%s) %s: %s\n" % (
+                sender,
+                datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
+                message)
+
     def send_message(self):
         app = Orkiv.get_running_app()
         app.xmpp.send_message(
             mto=self.jabber_id,
             mbody=self.send_chat_textinput.text)
-        self.chat_log_label.text += "(%s) Me: %s\n" % (
-                datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
-                self.send_chat_textinput.text)
+        self.append_chat_message("Me:", self.send_chat_textinput.text)
         self.send_chat_textinput.text = ''
 
 Orkiv().run()
