@@ -13,6 +13,7 @@ from kivy.properties import StringProperty
 from kivy.uix.listview import ListItemButton
 import datetime
 from kivy.utils import escape_markup
+from kivy.core.audio import SoundLoader
 
 
 class Orkiv(App):
@@ -51,17 +52,34 @@ class AccountDetailsForm(AnchorLayout):
         modal = ConnectionModal(jabber_id, self.password_box.text)
         modal.open()
 
-class AccountDetailsTextInput(TextInput):
+class EnterTextInput(TextInput):
+    def __init__(self, **kwargs):
+        self.register_event_type("on_enter_key")
+        super(EnterTextInput, self).__init__(**kwargs)
+
+    def _keyboard_on_key_down(self, window, keycode, text, modifiers):
+        if keycode[0] == 13:  # 13 is the keycode for <enter>
+            self.dispatch("on_enter_key")
+        else:
+            super(EnterTextInput, self)._keyboard_on_key_down(
+                    window, keycode, text, modifiers)
+
+
+    def on_enter_key(self):
+        pass
+
+class AccountDetailsTextInput(EnterTextInput):
     next = ObjectProperty()
 
     def _keyboard_on_key_down(self, window, keycode, text, modifiers):
         if keycode[0] == 9:  # 9 is the keycode for
             self.next.focus = True
-        elif keycode[0] == 13:  # 13 is the keycode for
-            self.parent.parent.parent.login()  # this is not future friendly
         else:
             super(AccountDetailsTextInput, self)._keyboard_on_key_down(
                     window, keycode, text, modifiers)
+
+        def on_enter_key(self):
+            self.parent.parent.parent.login()  # this is not future friendly
 
 class ConnectionModal(ModalView):
     def __init__(self, jabber_id, password):
@@ -125,6 +143,7 @@ class OrkivRoot(BoxLayout):
         super(OrkivRoot, self).__init__()
         self.buddy_list = None
         self.chat_windows = {}
+        self.in_sound = SoundLoader.load("orkiv/sounds/in.wav")
 
     def show_buddy_list(self):
         self.clear_widgets()
@@ -150,6 +169,7 @@ class OrkivRoot(BoxLayout):
 
         chat_window = self.get_chat_window(jabber_id)
         chat_window.append_chat_message(jabber_id, message['body'], color="aaaaff")
+        self.in_sound.play()
 
 class BuddyListItem(BoxLayout, ListItemButton):
     jabberid = StringProperty()
@@ -169,6 +189,7 @@ class ChatWindow(BoxLayout):
                 color,
                 escape_markup(sender),
                 escape_markup(message))
+        self.chat_log_label.parent.scroll_y = 0.0
 
     def send_message(self):
         app = Orkiv.get_running_app()
@@ -177,5 +198,6 @@ class ChatWindow(BoxLayout):
             mbody=self.send_chat_textinput.text)
         self.append_chat_message("Me:", self.send_chat_textinput.text, color="aaffbb")
         self.send_chat_textinput.text = ''
+
 
 Orkiv().run()
