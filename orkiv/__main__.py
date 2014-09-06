@@ -113,6 +113,11 @@ class BuddyList(BoxLayout):
         super(BuddyList, self).__init__()
         self.app = Orkiv.get_running_app()
         self.list_view.adapter.data = sorted(self.app.xmpp.client_roster.keys())
+        self.new_messages = set()
+
+    def force_list_view_update(self):
+        self.list_view.adapter.update_for_new_data()
+        self.list_view._trigger_reset_populate()
 
     def roster_converter(self, index, jabberid):
         result = {
@@ -132,10 +137,13 @@ class BuddyList(BoxLayout):
             result['status_message'] = ""
             result['online_status'] = "offline"
 
-        if index % 2:
-            result['background_color'] = (0, 0, 0, 1)
+        if jabberid in self.new_messages:
+            result['background_color'] = (0.6, 0.4, 0.6, 1)
         else:
-            result['background_color'] = (0.05, 0.05, 0.07, 1)
+            result['background_color'] = (0, 0, 0, 1)
+        if index % 2:
+            result['background_color'] = (x + .3 for x in result['background_color'])
+
         return result
 
 class OrkivRoot(BoxLayout):
@@ -161,6 +169,8 @@ class OrkivRoot(BoxLayout):
     def show_buddy_chat(self, jabber_id):
         self.remove_widget(self.buddy_list)
         self.add_widget(self.get_chat_window(jabber_id))
+        self.buddy_list.new_messages.discard(jabber_id)
+        self.buddy_list.force_list_view_update()
 
     def handle_xmpp_message(self, message):
         if message['type'] not in ['normal', 'chat']:
@@ -170,6 +180,9 @@ class OrkivRoot(BoxLayout):
         chat_window = self.get_chat_window(jabber_id)
         chat_window.append_chat_message(jabber_id, message['body'], color="aaaaff")
         self.in_sound.play()
+        if chat_window not in self.children:
+            self.buddy_list.new_messages.add(jabber_id)
+            self.buddy_list.force_list_view_update()
 
 class BuddyListItem(BoxLayout, ListItemButton):
     jabberid = StringProperty()
