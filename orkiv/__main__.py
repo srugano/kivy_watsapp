@@ -30,6 +30,7 @@ class Orkiv(App):
         self.xmpp.process()
         self.xmpp.send_presence()
         self.xmpp.get_roster()
+        self.xmpp.add_event_handler('message', self.root.handle_xmpp_message)
 
     def disconnect_xmpp(self):
         if self.xmpp and self.xmpp.state.ensure("connected"):
@@ -137,6 +138,18 @@ class OrkivRoot(BoxLayout):
         if jabber_id not in self.chat_windows:
             self.chat_windows[jabber_id] = ChatWindow(jabber_id=jabber_id)
         self.add_widget(self.chat_windows[jabber_id])
+
+    def handle_xmpp_message(self, message):
+        if message['type'] not in ['normal', 'chat']:
+            return
+        jabber_id = message['from'].bare
+
+        if jabber_id not in self.chat_windows:
+            self.chat_windows[jabber_id] = ChatWindow(jabber_id=jabber_id)
+        self.chat_windows[jabber_id].chat_log_label.text += "(%s) %s: %s\n" % (
+                datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
+                jabber_id,
+                message['body'])
 
 class BuddyListItem(BoxLayout, ListItemButton):
     jabberid = StringProperty()
