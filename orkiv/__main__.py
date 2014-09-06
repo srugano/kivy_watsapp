@@ -146,51 +146,6 @@ class BuddyList(BoxLayout):
 
         return result
 
-class OrkivRoot(BoxLayout):
-    def __init__(self):
-        super(OrkivRoot, self).__init__()
-        self.buddy_list = None
-        self.chat_windows = {}
-        self.in_sound = SoundLoader.load("orkiv/sounds/in.wav")
-
-    def show_buddy_list(self):
-        self.clear_widgets()
-        if not self.buddy_list:
-            self.buddy_list = BuddyList()
-        for buddy_list_items in self.buddy_list.list_view.adapter.selection:
-            buddy_list_items.deselect()
-        self.add_widget(self.buddy_list)
-
-    def get_chat_window(self, jabber_id):
-        if jabber_id not in self.chat_windows:
-            self.chat_windows[jabber_id] = ChatWindow(jabber_id=jabber_id)
-        return self.chat_windows[jabber_id]
-
-    def show_buddy_chat(self, jabber_id):
-        self.remove_widget(self.buddy_list)
-        self.add_widget(self.get_chat_window(jabber_id))
-        self.buddy_list.new_messages.discard(jabber_id)
-        self.buddy_list.force_list_view_update()
-
-    def handle_xmpp_message(self, message):
-        if message['type'] not in ['normal', 'chat']:
-            return
-        jabber_id = message['from'].bare
-
-        chat_window = self.get_chat_window(jabber_id)
-        chat_window.append_chat_message(jabber_id, message['body'], color="aaaaff")
-        self.in_sound.play()
-        if chat_window not in self.children:
-            self.buddy_list.new_messages.add(jabber_id)
-            self.buddy_list.force_list_view_update()
-
-class BuddyListItem(BoxLayout, ListItemButton):
-    jabberid = StringProperty()
-    full_name = StringProperty()
-    status_message = StringProperty()
-    online_status = StringProperty()
-    background = ObjectProperty()
-
 class ChatWindow(BoxLayout):
     jabber_id = StringProperty()
     chat_log_label = ObjectProperty()
@@ -212,5 +167,71 @@ class ChatWindow(BoxLayout):
         self.append_chat_message("Me:", self.send_chat_textinput.text, color="aaffbb")
         self.send_chat_textinput.text = ''
 
+class OrkivRoot(BoxLayout):
+
+    mode = StringProperty("narrow")
+
+    @property
+    def chat_visible(self):
+        return ChatWindow in {c.__class__ for c in self.children}
+
+    @property
+    def buddy_list_visible(self):
+        return self.buddy_list in self.children
+
+    def __init__(self):
+        super(OrkivRoot, self).__init__()
+        self.buddy_list = None
+        self.chat_windows = {}
+        self.in_sound = SoundLoader.load("orkiv/sounds/in.wav")
+
+    def show_buddy_list(self):
+        self.clear_widgets()
+        if not self.buddy_list:
+            self.buddy_list = BuddyList()
+        for buddy_list_items in self.buddy_list.list_view.adapter.selection:
+            buddy_list_items.deselect()
+        self.add_widget(self.buddy_list)
+
+    def get_chat_window(self, jabber_id):
+        if jabber_id not in self.chat_windows:
+            self.chat_windows[jabber_id] = ChatWindow(jabber_id=jabber_id)
+        return self.chat_windows[jabber_id]
+
+    def show_buddy_chat(self, jabber_id):
+        self.clear_widgets()
+        if self.mode == "wide":
+            self.add_widget(self.buddy_list)
+
+        self.add_widget(self.get_chat_window(jabber_id))
+        self.buddy_list.new_messages.discard(jabber_id)
+        self.buddy_list.force_list_view_update()
+
+    def handle_xmpp_message(self, message):
+        if message['type'] not in ['normal', 'chat']:
+            return
+        jabber_id = message['from'].bare
+
+        chat_window = self.get_chat_window(jabber_id)
+        chat_window.append_chat_message(jabber_id, message['body'], color="aaaaff")
+        self.in_sound.play()
+        if chat_window not in self.children:
+            self.buddy_list.new_messages.add(jabber_id)
+            self.buddy_list.force_list_view_update()
+
+    def on_mode(self, widget, mode):
+        if mode == "narrow":
+            if self.chat_visible and self.buddy_list_visible:
+                self.remove_widget(self.buddy_list)
+        else:
+            if self.chat_visible and not self.buddy_list_visible:
+                self.add_widget(self.buddy_list, index=1)
+
+class BuddyListItem(BoxLayout, ListItemButton):
+    jabberid = StringProperty()
+    full_name = StringProperty()
+    status_message = StringProperty()
+    online_status = StringProperty()
+    background = ObjectProperty()
 
 Orkiv().run()
