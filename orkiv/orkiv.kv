@@ -28,12 +28,12 @@ OrkivRoot:
                 id: server_input
                 next: username_input
             Label:
-                text: "Username"
+                text: "Itazirano"
             AccountDetailsTextInput:
                 id: username_input
                 next: password_input
             Label:
-                text: "Password"
+                text: "Modopases"
             AccountDetailsTextInput:
                 next: server_input
                 password: True
@@ -41,7 +41,7 @@ OrkivRoot:
         Button:
             size_hint_y: None
             height: "40dp"
-            text: "Login"
+            text: "Ikonekte"
             on_press: root.login()
 <BuddyListItem>:
     size_hint_y: None
@@ -80,7 +80,7 @@ OrkivRoot:
     chat_log_label: chat_log_label
     send_chat_textinput: send_chat_textinput
     Label:
-        text: "chatting with " + root.jabber_id
+        text: "terinkuru na " + root.jabber_id
         size_hint_y: None
         height: "40dp"
     ScrollView:
@@ -96,7 +96,7 @@ OrkivRoot:
         Button:
             size_hint_x: None
             width: "70dp"
-            text: "Buddies"
+            text: "Abagenzi"
             on_release: app.root.show_buddy_list()
         EnterTextInput:
             id: send_chat_textinput
@@ -104,5 +104,5 @@ OrkivRoot:
         Button:
             size_hint_x: None
             width: "70dp"
-            text: "Send"
+            text: "Rungika"
             on_release: root.send_message()

@@ -30,7 +30,7 @@ class Orkiv(App):
         self.xmpp.reconnect_max_attempts = 1
         connected = self.xmpp.connect()
         if not connected:
-            raise XMPPError("unable to connect")
+            raise XMPPError("Vyanse kwikonecta")
         self.xmpp.process()
         self.xmpp.send_presence()
         self.xmpp.get_roster()
@@ -87,7 +87,7 @@ class ConnectionModal(ModalView):
     def __init__(self, jabber_id, password):
         super(ConnectionModal, self).__init__(auto_dismiss=False,
             anchor_y="bottom")
-        self.label = Label(text="Connecting to %s..." % jabber_id)
+        self.label = Label(text="Turiko turikonekta kuri %s..." % jabber_id)
         self.add_widget(self.label)
         self.jabber_id = jabber_id
         self.password = password
@@ -100,8 +100,8 @@ class ConnectionModal(ModalView):
             app.root.show_buddy_list()
             self.dismiss()
         except (XMPPError, InvalidJID):
-            self.label.text = "Sorry, couldn't connect, check your credentials"
-            button = Button(text="Try Again")
+            self.label.text = "Mutubabarire, vyanse ko twikonekta, gerageza murabe ibisabwa"
+            button = Button(text="Gerageza kandi")
             button.size_hint = (1.0, None)
             button.height = "40dp"
             button.bind(on_press=self.dismiss)
@@ -166,7 +166,7 @@ class ChatWindow(BoxLayout):
         app.xmpp.send_message(
             mto=self.jabber_id,
             mbody=self.send_chat_textinput.text)
-        self.append_chat_message("Me:", self.send_chat_textinput.text, color="aaffbb")
+        self.append_chat_message("Jewe:", self.send_chat_textinput.text, color="aaffbb")
         self.send_chat_textinput.text = ''
 
 class OrkivRoot(BoxLayout):
