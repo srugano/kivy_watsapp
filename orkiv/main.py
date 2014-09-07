@@ -21,8 +21,9 @@ __version__ = 1.0
 class Orkiv(App):
     icon = 'customicon.png'
 
-    def __init__(self):
+    def __init__(self, root_dir):
         super(Orkiv, self).__init__()
+        self.root_dir = root_dir
         self.xmpp = None
 
     def connect_to_jabber(self, jabber_id, password):
@@ -236,8 +237,8 @@ class BuddyListItem(BoxLayout, ListItemButton):
     online_status = StringProperty()
     background = ObjectProperty()
 
-def main():
-    Orkiv().run()
+def main(root_dir="orkiv/"):
+    Orkiv(root_dir).run()
 
 if __name__ == "__main__":
     main()
