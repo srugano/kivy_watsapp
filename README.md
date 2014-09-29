@@ -2,6 +2,10 @@
 
 I'm learning to build a **XMPP** app as a [Kivy](http://kivy.org/#home) application using this tutorial from [Dusty's Diverse Domain](http://archlinux.me/dusty)
 
+####Screenshot####
+
+![XMPP client used with La Quadrature du Net in Kirundi](./orkiv/LQDN.png?raw=true  "XMPP client used with La Quadrature du Net in Kirundi")
+
 ### What is this repository for? ###
 
 * [Kivy](http://kivy.org/#home)  is an Open source Python library for rapid development of applications
