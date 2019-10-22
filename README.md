@@ -1,3 +1,4 @@
+[![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
 # README #
 
 I'm learning to build a **XMPP** app as a [Kivy](http://kivy.org/#home) application using this tutorial from [Dusty's Diverse Domain](http://archlinux.me/dusty)
